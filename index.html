@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./styles.css" />
+    <title>Todo Enhancement</title>
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+  <script src="https://www.unpkg.com/react@18.2.0/umd/react.development.js"></script>
+  <script src="https://www.unpkg.com/react-dom@18.2.0/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script type="text/babel">
+    // Your  code will go here
+
+    // form component
+    function FormComponent() {
+      // maintaining the formState,
+      let [task, setTask] = React.useState("");
+
+      // maintaining the array of Todos,
+      let [todos, setTodos] = React.useState([]);
+
+      // function to handle change in input,
+      function handleInputChange(event) {
+        setTask(event.target.value);
+      }
+
+      // function to handle Submit button,
+      function handleSubmit(e) {
+        e.preventDefault();
+        // checking weather the input field in empty or not,
+        if (task === "") {
+          alert("Enter the task to be done");
+          return;
+        }
+        // Setting the state for todo
+        setTodos([...todos, { task, completed: false }]);
+        // setting the tasks state to default
+        setTask("");
+      }
+
+      return (
+        <>
+          <h1>Todo Application</h1>
+          <form onSubmit={handleSubmit}>
+            <input
+              type="text"
+              name="task"
+              value={task}
+              placeholder="Enter the task to be done"
+              onChange={handleInputChange}
+            />
+            <button>submit</button>
+          </form>
+          {/* Todo component*/}
+          {todos.map((todo, i) => {
+            return <TodoComponent key={i} todo={todo} index={i} todos={todos} setTodos={setTodos}/>;
+          })}
+        </>
+      );
+    }
+
+   // todo items component,
+function TodoComponent({ todo,index, todos,setTodos }) {
+  let [newTodo, setNewTodo] = React.useState(todo);
+  let { task, completed } = newTodo;
+
+  // Function to handle completion status change
+  function handleCompletionChange() {
+    // Updating the todo object with new completion status
+    setNewTodo({
+      ...newTodo,
+      completed: !completed, // Toggle completion status
+    });
+  }
+
+  function handleDelete() {
+  setTodos(todos.filter((_, i) => i !== index));
+}
+
+
+
+  return (
+    <div id="todo">
+      <h4>Task Name: {task}</h4>
+      <label htmlFor="completion" style={{textDecoration :completed === true ? "line-through" : "none", color: completed === true ? "green" :"red"}}>
+        Completed: 
+        <input 
+          type="checkbox" 
+          checked={completed} 
+          onChange={handleCompletionChange} 
+        />
+      </label>
+      <button onClick={handleDelete}>Delete</button>
+    </div>
+  );
+}
+ 
+
+    // App Component,
+    function App() {
+      return (
+        <>
+          <FormComponent />
+        </>
+      );
+    }
+
+    //catching the root element
+    let rootElement = ReactDOM.createRoot(document.getElementById("root"));
+    rootElement.render(<App />);
+  </script>
+</html>
